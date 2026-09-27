@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: ai-job-agent
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/aijobagent}
+    username: ${DB_USERNAME:aijobagent}
+    password: ${DB_PASSWORD:aijobagent}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+server:
+  port: ${SERVER_PORT:8080}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+app:
+  mock-ai: ${APP_MOCK_AI:true}
+  daily-enabled: ${APP_DAILY_ENABLED:true}
+  daily-cron: ${APP_DAILY_CRON:0 0 11 * * *}
+  time-zone: ${APP_TIME_ZONE:Asia/Kolkata}
+  match-threshold: ${APP_MATCH_THRESHOLD:75}
+  strong-match-threshold: ${APP_STRONG_MATCH_THRESHOLD:85}
+  report-directory: ${APP_REPORT_DIRECTORY:./data/reports}
+  document-directory: ${APP_DOCUMENT_DIRECTORY:./data/documents}
+  target-locations: ${APP_TARGET_LOCATIONS:Dubai,UAE,Netherlands,UK}
+  target-titles: ${APP_TARGET_TITLES:Java Backend Engineer,Senior Java Engineer,Lead Java Engineer,Staff Backend Engineer}
+  greenhouse-boards: []
+  smart-recruiters-companies: []
+
+llm:
+  api-key: ${OPENAI_API_KEY:}
+  base-url: ${LLM_BASE_URL:https://api.openai.com/v1}
+  model: ${LLM_MODEL:gpt-4.1-mini}

@@ -1,0 +1,7 @@
+app:
+  greenhouse-boards:
+    - company: ExampleCompany
+      board-token: example
+  smart-recruiters-companies:
+    - company: ExampleCompany
+      identifier: example

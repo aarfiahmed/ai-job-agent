@@ -1,0 +1,36 @@
+{
+  "name": "AI Job Agent - Daily 11AM",
+  "nodes": [
+    {
+      "parameters": {"triggerTimes":{"item":[{"mode":"everyDay","hour":11,"minute":0}]}},
+      "id":"daily-trigger",
+      "name":"11 AM India",
+      "type":"n8n-nodes-base.cron",
+      "typeVersion":2,
+      "position":[0,0]
+    },
+    {
+      "parameters":{"method":"POST","url":"http://app:8080/api/jobs/run","options":{}},
+      "id":"run-jobs",
+      "name":"Run Job Agent",
+      "type":"n8n-nodes-base.httpRequest",
+      "typeVersion":4.2,
+      "position":[260,0]
+    },
+    {
+      "parameters":{"method":"POST","url":"http://app:8080/api/jobs/report","options":{}},
+      "id":"build-report",
+      "name":"Build Report",
+      "type":"n8n-nodes-base.httpRequest",
+      "typeVersion":4.2,
+      "position":[520,0]
+    }
+  ],
+  "connections":{
+    "11 AM India":{"main":[[{"node":"Run Job Agent","type":"main","index":0}]]},
+    "Run Job Agent":{"main":[[{"node":"Build Report","type":"main","index":0}]]}
+  },
+  "active":false,
+  "settings":{"executionOrder":"v1"},
+  "meta":{"templateCredsSetupCompleted":true}
+}

@@ -1,0 +1,68 @@
+services:
+  app:
+    build: .
+    container_name: aijobagent-app
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/aijobagent
+      DB_USERNAME: aijobagent
+      DB_PASSWORD: aijobagent
+      APP_MOCK_AI: ${APP_MOCK_AI:-true}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://api.openai.com/v1}
+      LLM_MODEL: ${LLM_MODEL:-gpt-4.1-mini}
+      APP_DAILY_ENABLED: ${APP_DAILY_ENABLED:-true}
+      APP_TIME_ZONE: ${APP_TIME_ZONE:-Asia/Kolkata}
+      APP_DAILY_CRON: ${APP_DAILY_CRON:-0 0 11 * * *}
+      APP_STRONG_MATCH_THRESHOLD: ${APP_STRONG_MATCH_THRESHOLD:-85}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: aijobagent-postgres
+    environment:
+      POSTGRES_DB: aijobagent
+      POSTGRES_USER: aijobagent
+      POSTGRES_PASSWORD: aijobagent
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aijobagent -d aijobagent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: aijobagent-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant-data:/qdrant/storage
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: aijobagent-n8n
+    ports:
+      - "5678:5678"
+    environment:
+      N8N_SECURE_COOKIE: "false"
+      TZ: Asia/Kolkata
+    volumes:
+      - n8n-data:/home/node/.n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
+  qdrant-data:
+  n8n-data:
